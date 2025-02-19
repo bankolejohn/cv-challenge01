@@ -159,3 +159,130 @@ Your hosted application will be evaluated based on the following criteria:
 
 
 Good luck with this Challenge! This is your opportunity to showcase your end-to-end DevOps skills and stand out to potential employers.
+
+
+
+# Managing Multiple Python Versions on macOS and Resolving Conflicts
+
+## **Introduction**
+macOS comes with a system-installed version of Python, but many users install additional versions via Homebrew, the official Python installer, or pyenv. This can lead to conflicts when executing `python3` or `pip3`. This guide explains how to manage multiple Python versions on macOS and ensure the correct version is used.
+
+---
+## **Checking Installed Python Versions**
+To see all installed Python versions, run:
+```bash
+which -a python3
+```
+Example output:
+```
+/Library/Frameworks/Python.framework/Versions/3.13/bin/python3
+/usr/local/bin/python3
+/usr/bin/python3
+```
+This indicates multiple Python installations:
+- `/usr/bin/python3`: System Python (default macOS version, not recommended for modifications).
+- `/usr/local/bin/python3`: Homebrew-installed Python.
+- `/Library/Frameworks/Python.framework/Versions/3.13/bin/python3`: Python installed from the official Python website.
+
+To check which Python version is currently active, use:
+```bash
+python3 --version
+```
+
+To check which `pip3` version is being used:
+```bash
+pip3 --version
+```
+Example output:
+```
+pip 24.3.1 from /Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pip (python 3.13)
+```
+
+---
+## **Managing Python Versions**
+### **Option 1: Using Homebrew’s Python as the Default**
+If you installed Python using Homebrew and want it to be the default, ensure it’s correctly linked:
+```bash
+brew link --overwrite python@3.13
+```
+Then, update your shell configuration to prioritize Homebrew’s Python:
+```bash
+echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+Verify the change:
+```bash
+which python3
+python3 --version
+```
+Expected output:
+```
+/usr/local/bin/python3
+Python 3.13.x
+```
+
+### **Option 2: Using pyenv to Manage Python Versions**
+If you prefer to switch between different Python versions dynamically, `pyenv` is a great tool. Install pyenv via Homebrew:
+```bash
+brew install pyenv
+```
+Add pyenv to your shell configuration:
+```bash
+echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.zshrc
+echo 'eval "$(pyenv init --path)"' >> ~/.zshrc
+source ~/.zshrc
+```
+Now, install and set a specific Python version:
+```bash
+pyenv install 3.13.2
+pyenv global 3.13.2
+```
+Check the active Python version:
+```bash
+python3 --version
+```
+Expected output:
+```
+Python 3.13.2
+```
+If you ever need to switch versions temporarily, use:
+```bash
+pyenv local 3.12.1  # Switches to Python 3.12.1 in the current directory
+```
+
+### **Option 3: Removing Unwanted Python Installations**
+If you want to remove conflicting versions:
+- **Uninstall Homebrew Python:**
+  ```bash
+  brew uninstall python@3.13
+  ```
+- **Remove the Official Python Installation:**
+  ```bash
+  sudo rm -rf /Library/Frameworks/Python.framework
+  sudo rm -rf /Applications/Python*
+  sudo rm -rf /usr/local/bin/python*
+  ```
+- **Unlink Previously Installed Versions:**
+  ```bash
+  brew unlink python@3.13
+  ```
+  To relink a version:
+  ```bash
+  brew link python@3.13
+  ```
+- **Uninstall pyenv (if necessary):**
+  ```bash
+  brew uninstall pyenv
+  rm -rf ~/.pyenv
+  ```
+
+---
+## **Conclusion**
+To manage multiple Python versions efficiently:
+- **Use Homebrew’s Python** if you only need a single, up-to-date version.
+- **Use pyenv** if you need multiple Python versions for different projects.
+- **Clean up unnecessary installations** to avoid confusion.
+- **Unlink and relink versions** to switch between Python installations as needed.
+
+By following these steps, you can ensure that your Python development environment on macOS remains stable and conflict-free.
+
